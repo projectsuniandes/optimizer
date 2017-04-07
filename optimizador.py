@@ -19,7 +19,7 @@ creditos = np.array([3,3,3,3])
 # VARIABLES DE DECISION
 
 # 1 = veo materia i en el semestre j, 0 = dlc
-x_0 = np.zeros(num_materias, num_max_semestres)
+x_0 = np.zeros((num_materias, num_max_semestres), dtype=int)
 
 
 # FUNCION OBJETIVO
@@ -42,6 +42,7 @@ def no_se_repite_materia(x_current):
     for i in range(num_materias):
         num_veces = 0
         for j in range(num_max_semestres):
+            print(x_current)
             num_veces += x_current[i, j]
         if num_veces != 1:
             resultado += -1
@@ -81,6 +82,7 @@ restricciones = ({'type': 'eq', 'fun': no_se_repite_materia},
                  {'type': 'eq', 'fun': no_se_excede_creditos_maximos},
                  {'type': 'eq', 'fun': prerrequisitos})
 
-sol = minimize(funcion_objetivo, x_0, method='tnc', constraints=restricciones)
+sol = minimize(funcion_objetivo, x_0, method='Nelder-Mead', constraints=restricciones)
+               #bounds = limites)
 
-print(sol)
+print(sol.x)
