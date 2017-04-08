@@ -35,7 +35,7 @@ Binary Variable x;
 Equations
 FunObj                                     Funcion Objetivo
 
-no_repitis_materia(materias_i)              una materia se aprueba solo una vez
+no_repitis_materia(materias_i)             una materia se aprueba solo una vez
 creditos_maximos(semestres_j)              numero maximo de creditos al semestres
 prerrequisitos_s2(materias_i)              prereqs
 prerrequisitos_s3(materias_i)              prereqs
