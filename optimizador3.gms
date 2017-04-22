@@ -34,8 +34,8 @@ Equations
 funcion_objetivo                                         funcion objetivo
 no_repitis_materia(materias_i)                           una materia se aprueba solo una vez
 creditos_maximos(semestres_j)                            numero maximo de creditos al semestres
-prerrequisitos(materias_i, materias_k, semestres_j)      prereqs
-prerrequisitos_prim(materias_i, materias_k, semestres_j) prereqs;
+prerrequisitos(materias_i, materias_k, semestres_j)      prereqs se deben cumplir
+prerrequisitos_prim(materias_i, materias_k, semestres_j) no se puede ver una materia que tenga prerequisito en primer semestre;
 
 
 funcion_objetivo                                 ..      n =E= sum((semestres_j), (sum((materias_i), x(materias_i, semestres_j)))*power(ord(semestres_j),5) );
@@ -48,16 +48,11 @@ prerrequisitos(materias_i, materias_k, semestres_j)$(requisitos(materias_i, mate
 
 prerrequisitos_prim(materias_i, materias_k, semestres_j)$(requisitos(materias_i, materias_k) eq 1 and ord(semestres_j) eq 1)  ..      x(materias_i, semestres_j) =E= 0;
 
-*prerrequisitos(materias_i, materias_k, semestres_j)$(requisitos(materias_k, materias_i) eq 1 and ord(semestres_j) ge 2)     ..      x(materias_i, semestres_j) =L= sum( semestres_l$(ord(semestres_l) ge 1 and ord(semestres_l) le ord(semestres_j)-1), x(materias_k, semestres_l) );
-*prerrequisitos(materias_i, materias_k, semestres_j)$(requisitos(materias_k, materias_i) eq 1 and ord(semestres_j) ge 2 and x(materias_i, semestres_j) eq 1)     ..      1 =E= sum( semestres_l$(ord(semestres_l) ge 1 and ord(semestres_l) le ord(semestres_j)-1), x(materias_k, semestres_l) );
-
 
 Model modelo /all/ ;
 option mip=CPLEX;
-*option dnlp=BARON;
 option Limrow=20
 Solve modelo using mip minimizing n;
-*Solve modelo using dnlp minimizing n;
 
 
 Display n.l
