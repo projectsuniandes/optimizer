@@ -3,6 +3,7 @@
 *************************************************************************
 
 $Set NUM_MAX_CREDITOS 25
+$Set NUM_MAX_SEMESTRES 16
 
 Sets
    materias_i   materias por codigo / ISIS1001, ISIS1002, MATE1001 /
