@@ -3,59 +3,57 @@
 *************************************************************************
 
 $Set NUM_MAX_CREDITOS 25
-$Set NUM_MAX_SEMESTRES 4
+$Set NUM_MAX_SEMESTRES 3
 
 Sets
+   materias_i   materias por codigo / ISIS1001, ISIS1002, MATE1001 /
    semestres_j  semestres /s1*s%NUM_MAX_SEMESTRES% /
-   semestres_j1(semestres_j) semestres del j al 1 /s1/
-   semestres_j2(semestres_j) semestres del j al 2 /s1*s2/
-   semestres_j3(semestres_j) semestres del j al 3 /s1*s3/
-   semestres_j4(semestres_j) semestres del j al 4 /s1*s4/
 
-   materias_i   materias por codigo / ISIS1001, ISIS1002, MATE1001, FISI1001 /
    alias(materias_i, materias_k)
+   alias(semestres_j, semestres_l)
+
 
 Table requisitos(materias_i, materias_k) vale 0 si no hay req 1 si hay pre de i a j y 2 si es correq
-               ISIS1001   ISIS1002  MATE1001   FISI1001
-ISIS1001       0          1         0          0
-ISIS1002       0          0         0          0
-MATE1001       0          0         0          2
-FISI1001       0          0         0          0
+               ISIS1001   ISIS1002  MATE1001
+ISIS1001       0          0         1
+ISIS1002       1          0         0
+MATE1001       0          0         0
 
-parameter creditos(materias_i) num de creditos de cada materia
-         /ISIS1001 3, ISIS1002 3, MATE1001 3, FISI1001 3/;
+
+Parameter creditos(materias_i) num de creditos de cada materia /ISIS1001 3, ISIS1002 3, MATE1001 3/;
 
 
 Variables
-  x(materias_i, semestres_j)        vale 1 si veo la materia_i en el semestre_j
-  n                                 numero minimo de semestres;
+   x(materias_i, semestres_j)        vale 1 si veo la materia_i en el semestre_j
+   n                                 numero minimo de semestres;
 
 Binary Variable x;
 
+
 Equations
-FunObj                                     Funcion Objetivo
-
-no_repitis_materia(materias_i)             una materia se aprueba solo una vez
-creditos_maximos(semestres_j)              numero maximo de creditos al semestres
-prerrequisitos_s2(materias_i)              prereqs
-prerrequisitos_s3(materias_i)              prereqs
-prerrequisitos_s4(materias_i)              prereqs;
+funcion_objetivo                                         funcion objetivo
+no_repitis_materia(materias_i)                           una materia se aprueba solo una vez
+creditos_maximos(semestres_j)                            numero maximo de creditos al semestres
+prerrequisitos(materias_i, materias_k, semestres_j)      prereqs se deben cumplir
+prerrequisitos_prim(materias_i, materias_k, semestres_j) no se puede ver una materia que tenga prerequisito en primer semestre;
 
 
+funcion_objetivo                                 ..      n =E= sum((semestres_j), (sum((materias_i), x(materias_i, semestres_j)))*power(ord(semestres_j),5) );
 
-FunObj                                          ..      n =e= sum((semestres_j), (sum((materias_i), x(materias_i, semestres_j)))*power(ord(semestres_j),5) );
+no_repitis_materia(materias_i)                   ..      sum( (semestres_j), x(materias_i, semestres_j) ) =E= 1;
 
-no_repitis_materia(materias_i)                  ..      sum( (semestres_j), x(materias_i, semestres_j) ) =e= 1;
-creditos_maximos(semestres_j)                   ..      sum( (materias_i), x(materias_i, semestres_j)*creditos(materias_i) ) =l= %NUM_MAX_CREDITOS%;
+creditos_maximos(semestres_j)                    ..      sum( (materias_i), x(materias_i, semestres_j)*creditos(materias_i) ) =L= %NUM_MAX_CREDITOS%;
 
-prerrequisitos_s2(materias_i)                   ..      x(materias_i, 's2')*sum((materias_k), requisitos(materias_i, materias_k)) =e= sum( (materias_k), abs(sqr(requisitos(materias_i, materias_k)-1) - 1) * sum((semestres_j1), x(materias_k, semestres_j1)) );
-prerrequisitos_s3(materias_i)                   ..      x(materias_i, 's3')*sum((materias_k), requisitos(materias_i, materias_k)) =e= sum( (materias_k), abs(sqr(requisitos(materias_i, materias_k)-1) - 1) * sum((semestres_j2), x(materias_k, semestres_j2)) );
-prerrequisitos_s4(materias_i)                   ..      x(materias_i, 's4')*sum((materias_k), requisitos(materias_i, materias_k)) =e= sum( (materias_k), abs(sqr(requisitos(materias_i, materias_k)-1) - 1) * sum((semestres_j3), x(materias_k, semestres_j3)) );
+prerrequisitos(materias_i, materias_k, semestres_j)$(requisitos(materias_i, materias_k) eq 1 and ord(semestres_j) ge 2)       ..      sum( semestres_l$(ord(semestres_l) ge 2 and ord(semestres_l) le ord(semestres_j)), x(materias_i, semestres_l)) =E= sum( semestres_l$(ord(semestres_l) ge 1 and ord(semestres_l) le ord(semestres_j)-1), x(materias_k, semestres_l) );
+
+prerrequisitos_prim(materias_i, materias_k, semestres_j)$(requisitos(materias_i, materias_k) eq 1 and ord(semestres_j) eq 1)  ..      x(materias_i, semestres_j) =E= 0;
 
 
 Model modelo /all/ ;
 option mip=CPLEX;
+option Limrow=20
 Solve modelo using mip minimizing n;
+
 
 Display n.l
 Display x.l
