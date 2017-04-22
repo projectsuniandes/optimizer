@@ -39,16 +39,22 @@ creditos_maximos(semestres_j)              numero maximo de creditos al semestre
 *prerrequisitos_s2(materias_i, materias_k, semestres_j2)    prereqs
 *prerrequisitos_s3(materias_i, materias_k, semestres_j3)    prereqs;
 prerrequisitos(materias_i, materias_k, semestres_j)    prereqs;
+*prerrequisitos32(materias_i, materias_k, semestres_j)    prereqs
+*prerrequisitos0(materias_i, materias_k, semestres_j)    prereqs;
 
 
-FunObj                                          ..      n =e= sum((semestres_j), (sum((materias_i), x(materias_i, semestres_j)))*power(ord(semestres_j),5) );
+FunObj                                          ..      n =E= sum((semestres_j), (sum((materias_i), x(materias_i, semestres_j)))*power(ord(semestres_j),5) );
 
-no_repitis_materia(materias_i)                  ..      sum( (semestres_j), x(materias_i, semestres_j) ) =e= 1;
-creditos_maximos(semestres_j)                   ..      sum( (materias_i), x(materias_i, semestres_j)*creditos(materias_i) ) =l= %NUM_MAX_CREDITOS%;
+no_repitis_materia(materias_i)                  ..      sum( (semestres_j), x(materias_i, semestres_j) ) =E= 1;
+creditos_maximos(semestres_j)                   ..      sum( (materias_i), x(materias_i, semestres_j)*creditos(materias_i) ) =L= %NUM_MAX_CREDITOS%;
 
 *prerrequisitos_s2(materias_i, materias_k, semestres_j2)         ..      x(materias_i, semestres_j2) + requisitos(materias_k, materias_i) =l= sum((semestres_j1), x(materias_k, semestres_j1));
 *prerrequisitos_s3(materias_i, materias_k, semestres_j3)         ..      x(materias_i, semestres_j3) + requisitos(materias_k, materias_i) =l= sum((semestres_j2), x(materias_k, semestres_j2));
-prerrequisitos(materias_i, materias_k, semestres_j)$(ord(semestres_j) ge 2)         ..      x(materias_i, semestres_j) + requisitos(materias_k, materias_i) - 1 =l= sum( semestres_l$(ord(semestres_l) ge 1 and ord(semestres_l) le ord(semestres_j)-1), x(materias_k, semestres_l) );
+
+prerrequisitos(materias_i, materias_k, semestres_j)$(ord(semestres_j) ge 2)         ..      x(materias_i, semestres_j)*requisitos(materias_k, materias_i) =E= sum( semestres_l$(ord(semestres_l) ge 1 and ord(semestres_l) le ord(semestres_j)-1), x(materias_k, semestres_l) );
+*prerrequisitos32(materias_i, materias_k, semestres_j)$(ord(semestres_j) ge 2 and 2*x(materias_i, semestres_j) + x(materias_i, semestres_j)*requisitos(materias_k, materias_i) ne 0)         ..      2*x(materias_i, semestres_j) + x(materias_i, semestres_j)*requisitos(materias_k, materias_i) - 2 =L= sum( semestres_l$(ord(semestres_l) ge 1 and ord(semestres_l) le ord(semestres_j)-1), x(materias_k, semestres_l) );
+*prerrequisitos32(materias_i, materias_k, semestres_j)$(ord(semestres_j) ge 2 and 2*x(materias_i, semestres_j) + x(materias_i, semestres_j)*requisitos(materias_k, materias_i) eq 0)         ..      2*x(materias_i, semestres_j) + x(materias_i, semestres_j)*requisitos(materias_k, materias_i) =L= sum( semestres_l$(ord(semestres_l) ge 1 and ord(semestres_l) le ord(semestres_j)-1), x(materias_k, semestres_l) );
+
 
 
 Model modelo /all/ ;
