@@ -3,10 +3,10 @@
 *************************************************************************
 
 $Set NUM_MAX_CREDITOS 25
-$Set NUM_MAX_SEMESTRES 16
+$Set NUM_MAX_SEMESTRES 5
 
 Sets
-   materias_i   materias por codigo / ISIS1001, ISIS1002, MATE1001 /
+   materias_i   materias por codigo / ISIS1001, ISIS1002, ISIS1003, FISI1002, MATE1001, MATE1002 /
    semestres_j  semestres /s1*s%NUM_MAX_SEMESTRES% /
 
    alias(materias_i, materias_k)
@@ -14,13 +14,16 @@ Sets
 
 
 Table requisitos(materias_i, materias_k) vale 0 si no hay req 1 si hay pre de i a j y 2 si es correq
-               ISIS1001   ISIS1002  MATE1001
-ISIS1001       0          0         1
-ISIS1002       1          0         0
-MATE1001       0          0         0
+         ISIS1001 ISIS1002 ISIS1003 FISI1002 MATE1001 MATE1002
+ISIS1001 0        0        0        0        0        0
+ISIS1002 1        0        0        0        0        0
+ISIS1003 0        1        0        0        0        0
+FISI1002 0        0        0        0        1        0
+MATE1001 0        0        0        0        0        0
+MATE1002 0        0        0        0        1        0
 
 
-Parameter creditos(materias_i) num de creditos de cada materia /ISIS1001 3, ISIS1002 3, MATE1001 3/;
+Parameter creditos(materias_i) num de creditos de cada materia / ISIS1001 3, ISIS1002 3, ISIS1003 3, FISI1002 3, MATE1001 3, MATE1002 3 /;
 
 
 Variables
