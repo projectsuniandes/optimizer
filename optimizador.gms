@@ -1,17 +1,12 @@
-*************************************************************************
-***                         PROYECTO MSO                              ***
-*************************************************************************
-
 $Set NUM_MAX_CREDITOS 25
 $Set NUM_MAX_SEMESTRES 20
 
 Sets
-   materias_i   materias por codigo / ISIS1001, ISIS1002, ISIS1003, FISI1002, MATE1001, MATE1002 /
-   semestres_j  semestres /s1*s%NUM_MAX_SEMESTRES% /
+materias_i   materias por codigo / ISIS1001, ISIS1002, ISIS1003, FISI1002, MATE1001, MATE1002 /
+semestres_j  semestres /s1*s%NUM_MAX_SEMESTRES% /
 
-   alias(materias_i, materias_k)
-   alias(semestres_j, semestres_l)
-
+alias(materias_i, materias_k)
+alias(semestres_j, semestres_l)
 
 Table requisitos(materias_i, materias_k) vale 0 si no hay req 1 si hay pre de i a j y 2 si es correq
          ISIS1001 ISIS1002 ISIS1003 FISI1002 MATE1001 MATE1002
@@ -22,16 +17,13 @@ FISI1002 0        0        0        0        1        0
 MATE1001 0        0        0        0        0        0
 MATE1002 0        0        0        0        1        0
 
-
 Parameter creditos(materias_i) num de creditos de cada materia / ISIS1001 3, ISIS1002 3, ISIS1003 3, FISI1002 3, MATE1001 3, MATE1002 3 /;
 
-
 Variables
-   x(materias_i, semestres_j)        vale 1 si veo la materia_i en el semestre_j
-   n                                 numero minimo de semestres;
+x(materias_i, semestres_j)        vale 1 si veo la materia_i en el semestre_j
+n                                 numero minimo de semestres;
 
 Binary Variable x;
-
 
 Equations
 funcion_objetivo                                         funcion objetivo
@@ -39,7 +31,6 @@ no_repitis_materia(materias_i)                           una materia se aprueba 
 creditos_maximos(semestres_j)                            numero maximo de creditos al semestres
 prerrequisitos(materias_i, materias_k, semestres_j)      prereqs se deben cumplir
 prerrequisitos_prim(materias_i, materias_k, semestres_j) no se puede ver una materia que tenga prerequisito en primer semestre;
-
 
 funcion_objetivo                                 ..      n =E= sum((semestres_j), (sum((materias_i), x(materias_i, semestres_j)))*power(ord(semestres_j),5) );
 
@@ -51,12 +42,23 @@ prerrequisitos(materias_i, materias_k, semestres_j)$(requisitos(materias_i, mate
 
 prerrequisitos_prim(materias_i, materias_k, semestres_j)$(requisitos(materias_i, materias_k) eq 1 and ord(semestres_j) eq 1)  ..      x(materias_i, semestres_j) =E= 0;
 
+* Turn off the listing of the input file *
+$offlisting
+* Turn off the listing and cross-reference of the symbols used *
+$offsymxref offsymlist
 
 Model modelo /all/ ;
 option mip=CBC;
-option Limrow=20
+
+* equations listed per block *
+option limrow = 0;
+* variables listed per block *
+option limcol = 0;
+* solver's solution output printed *
+option solprint = off;
+* solver's system output printed *
+option sysout = off;
+
 Solve modelo using mip minimizing n;
 
-
-Display n.l
 Display x.l
