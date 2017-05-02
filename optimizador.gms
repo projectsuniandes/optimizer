@@ -29,14 +29,8 @@ no_repitis_materia(materias_i)                   ..      sum( (semestres_j), x(m
 creditos_maximos(semestres_j)                    ..      sum( (materias_i), x(materias_i, semestres_j)*creditos(materias_i) ) =L= %NUM_MAX_CREDITOS%;
 prerrequisitos(materias_i, materias_k, semestres_j)$(requisitos(materias_i, materias_k) eq 1 and ord(semestres_j) ge 2)       ..      sum( semestres_l$(ord(semestres_l) ge 2 and ord(semestres_l) le ord(semestres_j)), x(materias_i, semestres_l)) =E= sum( semestres_l$(ord(semestres_l) ge 1 and ord(semestres_l) le ord(semestres_j)-1), x(materias_k, semestres_l) );
 prerrequisitos_prim(materias_i, materias_k, semestres_j)$(requisitos(materias_i, materias_k) eq 1 and ord(semestres_j) eq 1)  ..      x(materias_i, semestres_j) =E= 0;
-$offlisting
-$offsymxref offsymlist
 Model modelo /all/ ;
 option mip=CBC;
-option limrow = 0;
-option limcol = 0;
-option solprint = off;
-option sysout = off;
 Solve modelo using mip minimizing n;
 file GAMSresults /C:\Users\MariaCamila\Desktop\resultados.txt/;
 put GAMSresults;
