@@ -3,7 +3,7 @@
 *************************************************************************
 
 $Set NUM_MAX_CREDITOS 25
-$Set NUM_MAX_SEMESTRES 5
+$Set NUM_MAX_SEMESTRES 20
 
 Sets
    materias_i   materias por codigo / ISIS1001, ISIS1002, ISIS1003, FISI1002, MATE1001, MATE1002 /
@@ -53,7 +53,7 @@ prerrequisitos_prim(materias_i, materias_k, semestres_j)$(requisitos(materias_i,
 
 
 Model modelo /all/ ;
-option mip=CPLEX;
+option mip=CBC;
 option Limrow=20
 Solve modelo using mip minimizing n;
 
