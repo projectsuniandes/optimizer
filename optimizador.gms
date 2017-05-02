@@ -38,4 +38,6 @@ option limcol = 0;
 option solprint = off;
 option sysout = off;
 Solve modelo using mip minimizing n;
-Display x.l
+file GAMSresults /C:\Users\MariaCamila\Desktop\resultados.txt/;
+put GAMSresults;
+loop((materias_i,semestres_j)$(x.l(materias_i, semestres_j) eq 1), put materias_i.tl, @12, semestres_j.tl /);
