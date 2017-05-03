@@ -1,24 +1,21 @@
-
 import java.io.*;
-
-
 
 public class Planeador {
 	
-	public int maxCreditos;
-	public int maxSemestres;
+	public static int maxCreditos;
+	public static int maxSemestres;
+	public static String ruta;
 	
-	public Planeador(int maxCreditos1, int maxSemestres1){
-		maxCreditos=maxCreditos1;
-		maxSemestres=maxSemestres1;
-		escribir();
+	public Planeador(int maxCreditos1, int maxSemestres1, String ruta1){
+		maxCreditos = maxCreditos1;
+		maxSemestres = maxSemestres1;
+		ruta = ruta1;
 	}
 
-	public void escribir(){
+	public static void escribirGAMS(){
 		PrintWriter printWriter = null;
-		System.out.println("llega");
 		try{
-			File direccion = new File("./Docs/file.gms");
+			File direccion = new File(ruta + "optimizador.gms");
 			printWriter = new PrintWriter(direccion);
 			printWriter.println("$Set NUM_MAX_CREDITOS "+ maxCreditos);
 			printWriter.println("$Set NUM_MAX_SEMESTRES "+ maxSemestres);
@@ -28,6 +25,7 @@ public class Planeador {
 			printWriter.println("alias(materias_i, materias_k)");
 			printWriter.println("alias(semestres_j, semestres_l)");
 			printWriter.println("Table requisitos(materias_i, materias_k) vale 0 si no hay req 1 si hay pre de i a j y 2 si es correq");
+			
 			//Matriz
 			printWriter.println("         ISIS1001 ISIS1002 ISIS1003 FISI1002 MATE1001 MATE1002");
 			printWriter.println("ISIS1001 0        0        0        0        0        0");
@@ -56,7 +54,7 @@ public class Planeador {
 			printWriter.println("Model modelo /all/ ;");
 			printWriter.println("option mip=CBC;");
 			printWriter.println("Solve modelo using mip minimizing n;");
-			printWriter.println("file GAMSresults /C:/Users/laura/Documentos/resultados.txt");
+			printWriter.println("file GAMSresults /"+ruta+"resultados.txt/;");
 			printWriter.println("put GAMSresults;");
 			printWriter.println("loop((materias_i,semestres_j)$(x.l(materias_i, semestres_j) eq 1), put materias_i.tl, @12, semestres_j.tl /);");
 			printWriter.close();
@@ -64,13 +62,57 @@ public class Planeador {
 		catch(Exception e){
 			e.printStackTrace();
 		}
-		
-	
-		
 	}
+	
+	public static void ejecutarGAMS(){
+		try {
+    		String comando = "C:\\GAMS\\win64\\24.0\\gams.exe " + ruta + "optimizador.gms" + " suppress=1 lo=0 o=nul";
+    	    Runtime.getRuntime().exec(comando);
+       	} catch (IOException e) {
+       		//TODO hacer algo si no se puede ejecutar
+    	}
+	}
+	
+	public static void leerResultadosGAMS(){
+		
+		File f = new File(ruta+"resultados.txt");
+		while(!f.exists()) { 
+		    try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		try {
+    		BufferedReader br = new BufferedReader(new FileReader(f));
+    	    
+    	    String linea = br.readLine();
+
+	    	while (linea != null) {
+	    		String elementos_linea[] = linea.split(" ");
+    	        System.out.println(elementos_linea[0]+" "+elementos_linea[elementos_linea.length - 1]);
+    	        linea = br.readLine();
+    	    }
+    	    
+    	    br.close();
+    	    
+    	} catch (Exception e) {
+			// TODO hacer algo si no se puede leer
+			e.printStackTrace();
+		} finally {
+    	    //TODO 
+    	}
+	}
+
+	
     public static void main(String[] args) {
-    	Planeador plan = new Planeador(3,4);
-    
+    	Planeador p = new Planeador(25, 20, "C:\\Users\\MariaCamila\\Desktop\\");
+    	
+    	escribirGAMS();
+    	ejecutarGAMS();
+    	leerResultadosGAMS();
 
     }
 }
